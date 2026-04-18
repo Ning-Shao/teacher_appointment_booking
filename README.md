@@ -33,6 +33,8 @@ If Google credentials are not configured or the teacher has not connected the Go
 
 Teachers can connect Google only if their email is included in `TEACHER_CONNECT_ALLOWLIST`.
 
+For Render deployment, make sure the service listens on `0.0.0.0` and that `BASE_URL` matches your Render domain. If `HOST` is set in Render, use `0.0.0.0`, not `127.0.0.1`.
+
 ## Tests
 
 ```bash

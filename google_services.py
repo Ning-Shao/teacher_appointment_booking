@@ -35,7 +35,12 @@ class GoogleService:
         env = parse_env_file()
         self.client_id = os.environ.get("GOOGLE_CLIENT_ID") or env.get("GOOGLE_CLIENT_ID", "")
         self.client_secret = os.environ.get("GOOGLE_CLIENT_SECRET") or env.get("GOOGLE_CLIENT_SECRET", "")
-        self.base_url = os.environ.get("BASE_URL") or env.get("BASE_URL", "http://localhost:3000")
+        self.base_url = (
+            os.environ.get("BASE_URL")
+            or env.get("BASE_URL", "")
+            or os.environ.get("RENDER_EXTERNAL_URL", "")
+            or "http://localhost:3000"
+        )
 
     @property
     def redirect_uri(self) -> str:
