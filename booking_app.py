@@ -13,6 +13,7 @@ from urllib.parse import parse_qs, quote, urlparse
 from booking_logic import (
     CANCELLATION_CUTOFF_HOURS,
     build_booking_summary,
+    create_contact_request,
     create_provisional_booking,
     delete_pending_booking,
     finalize_booking,
@@ -67,27 +68,30 @@ APP_TITLE = "AI Course Recommendation and Appointment Platform"
 TRANSLATIONS = {
     "en": {
         "title": "AI Course Recommendation and Appointment Platform",
-        "subtitle": "Explore a simulated undergraduate course catalog, chat with an AI-style advisor, generate a conflict-aware weekly plan, and book time with a teacher in one place.",
+        "subtitle": "Explore undergraduate and graduate course options, chat with an AI-style advisor, build a conflict-aware weekly plan, and book time with a teacher in one place.",
         "platform_badge": "Portfolio Project Demo",
         "nav_overview": "Overview",
         "nav_advisor": "AI Advisor",
         "nav_results": "Results",
         "nav_catalog": "Course Library",
         "nav_booking": "Book Teacher",
+        "nav_real_agent": "Real Agent",
         "hero_cta_advisor": "Start AI advising",
         "hero_cta_booking": "Jump to appointment",
-        "hero_stat_courses": "mock courses",
-        "hero_stat_schedule": "conflict-aware planner",
-        "hero_stat_booking": "booking flow kept live",
+        "hero_stat_courses_value": "12",
+        "hero_stat_courses": "sample courses in the library",
+        "hero_stat_schedule_value": "Smart",
+        "hero_stat_schedule": "schedule planner ready",
+        "hero_stat_booking_value": "Live",
+        "hero_stat_booking": "teacher booking workflow",
         "language": "Language",
-        "teacher_connect": "Teacher connect",
         "advisor_heading": "AI Course Advisor",
-        "advisor_subtitle": "Describe your semester goals and let the recommendation engine turn them into a shortlist, conflict report, and weekly schedule.",
+        "advisor_subtitle": "Chat first, then complete your planning preferences to unlock recommendation results.",
         "advisor_input_label": "Tell the advisor what you want",
         "advisor_placeholder": "Example: I want an AI-focused semester, not too many morning classes, and I may apply for research opportunities.",
         "advisor_send": "Send to advisor",
         "advisor_reset": "Reset chat",
-        "chat_intro": "Share your goals, workload preference, and interests. I will suggest courses, detect overlaps, and draft a schedule.",
+        "chat_intro": "Share your goals, workload preference, and interests. I will help you explore ideas before you generate a full recommendation plan.",
         "profile_heading": "Planning preferences",
         "career_goal": "Career or semester goal",
         "focus_areas": "Focus areas",
@@ -98,18 +102,26 @@ TRANSLATIONS = {
         "focus_education": "Education",
         "focus_research": "Research",
         "desired_load": "Semester load",
+        "choose_load": "Choose semester load",
         "load_light": "Light",
         "load_balanced": "Balanced",
         "load_challenging": "Challenging",
         "max_credits": "Target credits",
         "preferred_days": "Preferred class days",
         "avoid_mornings": "Avoid morning classes when possible",
+        "advisor_form_note": "Complete the required planning fields on the right before generating recommendation results.",
+        "advisor_form_required": "Complete the required planning fields first:",
+        "advisor_missing_load": "semester load",
+        "advisor_missing_credits": "target credits",
+        "advisor_missing_focus": "focus areas",
+        "advisor_missing_days": "preferred class days",
+        "generate_ready": "Your planning form is complete. You can now generate recommendation results.",
         "generate_plan": "Generate recommendations",
-        "catalog_heading": "Simulated Undergraduate Course Library",
-        "catalog_subtitle": "A mock catalog designed for demos, interviews, and portfolio presentations.",
+        "catalog_heading": "Simulated Course Library",
+        "catalog_subtitle": "A mock catalog with both undergraduate and graduate-level courses for demos and portfolio presentations.",
         "results_heading": "Recommendation Results",
         "results_subtitle": "Use the shortlist as a draft and refine it with a teacher afterward.",
-        "results_empty": "Your recommendation cards, conflict checks, and weekly schedule will appear here after you chat with the advisor or click generate.",
+        "results_empty": "Recommendation cards, conflict checks, and your weekly schedule will appear here after you complete the planning form and click generate.",
         "insights_heading": "Advisor summary",
         "recommendations_heading": "Recommended courses",
         "conflicts_heading": "Conflict detection",
@@ -123,6 +135,10 @@ TRANSLATIONS = {
         "match_reasons": "Why it matches",
         "meeting_times": "Meeting times",
         "outcomes": "Learning outcomes",
+        "program_level": "Program level",
+        "program_undergraduate": "Undergraduate",
+        "program_graduate": "Graduate",
+        "no_class_blocks": "No class blocks on this day.",
         "booking_section_title": "Teacher Appointment",
         "booking_section_subtitle": "Keep the original scheduling workflow and use it as the advising step after recommendation.",
         "timezone": "Time zone",
@@ -135,6 +151,7 @@ TRANSLATIONS = {
         "booking_form": "Booking form",
         "name": "Your name",
         "email": "Your email",
+        "phone": "Phone number",
         "comments": "Comments or topics to discuss",
         "confirm_booking": "Confirm booking",
         "reset": "Reset",
@@ -175,6 +192,14 @@ TRANSLATIONS = {
         "cancel_cutoff_note": "Appointments can only be canceled more than 24 hours before the start time.",
         "cancel_button": "Yes, cancel appointment",
         "back_button": "Back to platform",
+        "real_agent_heading": "Want To Talk To A Real Agent?",
+        "real_agent_subtitle": "Leave your contact details and a short note. A real teacher can follow up with you afterward.",
+        "real_agent_contact_hint": "Please leave at least one contact method: email or phone.",
+        "real_agent_button": "Request human follow-up",
+        "real_agent_success": "Your request has been received. A teacher can follow up with you later.",
+        "contact_us": "Contact us",
+        "technology_support": "Technology support",
+        "footer_rights": "Copyright 2026 AI Course Recommendation and Appointment Platform. All rights reserved.",
         "day_mon": "Mon",
         "day_tue": "Tue",
         "day_wed": "Wed",
@@ -183,27 +208,30 @@ TRANSLATIONS = {
     },
     "zh": {
         "title": "AI 课程推荐与预约平台",
-        "subtitle": "在一个平台里完成模拟本科课程探索、AI 顾问对话、时间冲突检测、周课表生成，以及老师预约。",
+        "subtitle": "在一个平台里完成本科与研究生课程探索、AI 顾问对话、时间冲突检测、周课表生成，以及老师预约。",
         "platform_badge": "简历项目 Demo",
         "nav_overview": "平台概览",
         "nav_advisor": "AI 顾问",
         "nav_results": "推荐结果",
         "nav_catalog": "课程库",
         "nav_booking": "预约老师",
+        "nav_real_agent": "真人咨询",
         "hero_cta_advisor": "开始 AI 推荐",
         "hero_cta_booking": "直接去预约",
-        "hero_stat_courses": "门模拟课程",
-        "hero_stat_schedule": "冲突检测排课",
-        "hero_stat_booking": "原预约流程保留",
+        "hero_stat_courses_value": "12",
+        "hero_stat_courses": "门课程样例",
+        "hero_stat_schedule_value": "智能",
+        "hero_stat_schedule": "排课引擎已就绪",
+        "hero_stat_booking_value": "在线",
+        "hero_stat_booking": "老师预约流程可用",
         "language": "语言",
-        "teacher_connect": "老师连接页",
         "advisor_heading": "AI 选课顾问",
-        "advisor_subtitle": "输入你的学期目标，系统会自动生成课程 shortlist、冲突报告和周课表草案。",
+        "advisor_subtitle": "先聊天，再补全右侧规划信息，最后解锁完整推荐结果。",
         "advisor_input_label": "告诉顾问你的需求",
         "advisor_placeholder": "例如：我想走 AI 方向，不想太多早课，而且可能想申请科研机会。",
         "advisor_send": "发送给顾问",
         "advisor_reset": "重置对话",
-        "chat_intro": "告诉我你的目标、课程负担偏好和兴趣方向，我会推荐课程、检测冲突并生成周课表。",
+        "chat_intro": "告诉我你的目标、课程负担偏好和兴趣方向，我会先帮你梳理思路，再生成完整推荐。",
         "profile_heading": "规划偏好",
         "career_goal": "学期目标或职业方向",
         "focus_areas": "重点方向",
@@ -214,18 +242,26 @@ TRANSLATIONS = {
         "focus_education": "教育",
         "focus_research": "研究",
         "desired_load": "学期负担",
+        "choose_load": "请选择学期负担",
         "load_light": "轻量",
         "load_balanced": "均衡",
         "load_challenging": "冲刺",
         "max_credits": "目标学分",
         "preferred_days": "偏好的上课日",
         "avoid_mornings": "尽量避免早课",
+        "advisor_form_note": "请先在右侧补全必填规划信息，再生成推荐结果。",
+        "advisor_form_required": "请先补全这些必填项：",
+        "advisor_missing_load": "学期负担",
+        "advisor_missing_credits": "目标学分",
+        "advisor_missing_focus": "重点方向",
+        "advisor_missing_days": "偏好的上课日",
+        "generate_ready": "你的规划表单已经完整，现在可以生成推荐结果。",
         "generate_plan": "生成推荐方案",
-        "catalog_heading": "模拟本科课程库",
-        "catalog_subtitle": "这是为作品集、演示和面试展示设计的 mock 课程目录。",
+        "catalog_heading": "模拟课程库",
+        "catalog_subtitle": "这是为作品集、演示和面试展示设计的 mock 课程目录，包含本科与研究生两个层级。",
         "results_heading": "推荐结果",
         "results_subtitle": "先把它当作草案，再预约老师进一步讨论和调整。",
-        "results_empty": "和 AI 顾问对话或点击生成后，这里会展示推荐卡片、冲突检测和周课表。",
+        "results_empty": "补全规划表单并点击生成后，这里会展示推荐卡片、冲突检测和周课表。",
         "insights_heading": "顾问总结",
         "recommendations_heading": "推荐课程",
         "conflicts_heading": "时间冲突检测",
@@ -239,6 +275,10 @@ TRANSLATIONS = {
         "match_reasons": "匹配原因",
         "meeting_times": "上课时间",
         "outcomes": "学习产出",
+        "program_level": "课程层级",
+        "program_undergraduate": "本科",
+        "program_graduate": "研究生",
+        "no_class_blocks": "这一天没有安排课程。",
         "booking_section_title": "老师预约",
         "booking_section_subtitle": "保留原有预约功能，并把它作为推荐结果后的老师咨询入口。",
         "timezone": "时区",
@@ -251,6 +291,7 @@ TRANSLATIONS = {
         "booking_form": "预约表单",
         "name": "你的姓名",
         "email": "你的邮箱",
+        "phone": "电话号码",
         "comments": "备注或想讨论的问题",
         "confirm_booking": "确认预约",
         "reset": "重置",
@@ -291,6 +332,14 @@ TRANSLATIONS = {
         "cancel_cutoff_note": "预约开始前 24 小时以内不能在线取消。",
         "cancel_button": "确认取消预约",
         "back_button": "返回平台",
+        "real_agent_heading": "想和真人顾问沟通吗？",
+        "real_agent_subtitle": "留下你的联系方式和简短说明，后续可以由真实老师继续跟进。",
+        "real_agent_contact_hint": "请至少留下一个联系方式：邮箱或电话。",
+        "real_agent_button": "提交真人跟进请求",
+        "real_agent_success": "你的请求已收到，老师后续可以联系你。",
+        "contact_us": "联系我们",
+        "technology_support": "技术支持",
+        "footer_rights": "Copyright 2026 AI 课程推荐与预约平台。保留所有权利。",
         "day_mon": "周一",
         "day_tue": "周二",
         "day_wed": "周三",
@@ -403,7 +452,8 @@ def app_html(initial_section: str = "overview") -> str:
       --accent: #0e766e;
       --accent-soft: rgba(14, 118, 110, 0.12);
       --accent-strong: #d96b2b;
-      --accent-strong-soft: rgba(217, 107, 43, 0.12);
+      --danger: #9c2d2d;
+      --danger-soft: rgba(200, 56, 56, 0.12);
       --shadow: 0 22px 48px rgba(23, 32, 51, 0.08);
       --radius: 24px;
     }
@@ -422,7 +472,7 @@ def app_html(initial_section: str = "overview") -> str:
     .shell {
       max-width: 1320px;
       margin: 0 auto;
-      padding: 28px 20px 56px;
+      padding: 28px 20px 48px;
     }
     .topbar {
       display: flex;
@@ -431,20 +481,6 @@ def app_html(initial_section: str = "overview") -> str:
       align-items: center;
       margin-bottom: 18px;
       flex-wrap: wrap;
-    }
-    .topbar-links, .topbar-controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .ghost-link {
-      text-decoration: none;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.62);
-      border: 1px solid var(--line);
-      color: var(--ink);
     }
     .badge {
       display: inline-flex;
@@ -465,7 +501,7 @@ def app_html(initial_section: str = "overview") -> str:
       align-items: stretch;
       margin-bottom: 22px;
     }
-    .hero-main, .hero-side, .panel {
+    .hero-main, .hero-side, .panel, .footer {
       background: var(--panel);
       backdrop-filter: blur(8px);
       border: 1px solid var(--line);
@@ -493,7 +529,7 @@ def app_html(initial_section: str = "overview") -> str:
       font-family: Georgia, "Times New Roman", serif;
       font-size: clamp(2.25rem, 4vw, 3.8rem);
       line-height: 1.08;
-      max-width: 10ch;
+      max-width: 11ch;
     }
     .hero-main p {
       position: relative;
@@ -509,7 +545,7 @@ def app_html(initial_section: str = "overview") -> str:
       flex-wrap: wrap;
       margin-top: 24px;
     }
-    .primary-link, .primary, .secondary, .chip {
+    .primary-link, .primary, .secondary, .ghost {
       border: 0;
       border-radius: 999px;
       padding: 12px 16px;
@@ -523,13 +559,16 @@ def app_html(initial_section: str = "overview") -> str:
       color: white;
       box-shadow: 0 12px 24px rgba(14, 118, 110, 0.24);
     }
-    .secondary {
+    .secondary, .ghost {
       background: rgba(255, 255, 255, 0.86);
       color: var(--ink);
       border: 1px solid var(--line);
     }
-    .primary-link:hover, .primary:hover, .secondary:hover, .chip:hover {
-      transform: translateY(-1px);
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
     .hero-side {
       padding: 24px;
@@ -545,7 +584,7 @@ def app_html(initial_section: str = "overview") -> str:
     }
     .hero-stat strong {
       display: block;
-      font-size: 2rem;
+      font-size: 1.9rem;
       margin-bottom: 6px;
       font-family: Georgia, "Times New Roman", serif;
     }
@@ -554,14 +593,21 @@ def app_html(initial_section: str = "overview") -> str:
       top: 0;
       z-index: 20;
       display: flex;
-      gap: 10px;
+      justify-content: space-between;
+      gap: 12px;
       flex-wrap: wrap;
       margin-bottom: 22px;
       padding: 14px;
       border-radius: 20px;
-      background: rgba(246, 239, 227, 0.85);
+      background: rgba(246, 239, 227, 0.88);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(23, 32, 51, 0.08);
+    }
+    .nav-links, .nav-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     .nav a {
       text-decoration: none;
@@ -569,6 +615,15 @@ def app_html(initial_section: str = "overview") -> str:
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.78);
       border: 1px solid var(--line);
+    }
+    .nav-tools label {
+      color: var(--muted);
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    .nav-tools select {
+      width: auto;
+      min-width: 136px;
     }
     .section {
       margin-top: 26px;
@@ -613,26 +668,22 @@ def app_html(initial_section: str = "overview") -> str:
       color: var(--muted);
       line-height: 1.6;
     }
-    .input-row, .toolbar, .checkbox-grid, .weekday-grid, .button-row {
+    .input-row, .toolbar, .checkbox-grid, .weekday-grid, .button-row, .contact-grid {
       display: grid;
       gap: 12px;
     }
     .toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 18px; }
     .checkbox-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .weekday-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-    .button-row {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      margin-top: 14px;
-    }
+    .button-row { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 14px; }
+    .contact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     label {
       display: block;
       margin-bottom: 6px;
       color: var(--muted);
       font-size: 0.94rem;
     }
-    input, textarea, select, button {
-      font: inherit;
-    }
+    input, textarea, select, button { font: inherit; }
     input, textarea, select {
       width: 100%;
       border: 1px solid var(--line);
@@ -641,10 +692,7 @@ def app_html(initial_section: str = "overview") -> str:
       background: rgba(255, 255, 255, 0.9);
       color: var(--ink);
     }
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
+    textarea { min-height: 120px; resize: vertical; }
     .check-pill {
       display: flex;
       align-items: center;
@@ -680,6 +728,21 @@ def app_html(initial_section: str = "overview") -> str:
       background: rgba(255, 255, 255, 0.85);
       border-bottom-left-radius: 8px;
     }
+    .prompt-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .subtle-note {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(14, 118, 110, 0.08);
+      color: #0f5d58;
+      line-height: 1.6;
+    }
     .empty-state {
       padding: 20px;
       border-radius: 20px;
@@ -699,16 +762,8 @@ def app_html(initial_section: str = "overview") -> str:
       background: rgba(255, 255, 255, 0.78);
       padding: 16px;
     }
-    .course-card h4, .schedule-day h4 {
-      margin: 0 0 8px;
-      font-size: 1.05rem;
-    }
-    .meta-row, .tag-row, .reason-list, .meeting-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
+    .course-card h4, .schedule-day h4 { margin: 0 0 8px; font-size: 1.05rem; }
+    .meta-row, .tag-row, .reason-list, .meeting-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .meta-pill, .tag, .reason-pill, .meeting-pill, .status-pill {
       display: inline-flex;
       align-items: center;
@@ -724,11 +779,7 @@ def app_html(initial_section: str = "overview") -> str:
       color: var(--accent);
       border-color: rgba(14, 118, 110, 0.2);
     }
-    .reason-list {
-      display: grid;
-      gap: 8px;
-      margin-top: 12px;
-    }
+    .reason-list { display: grid; gap: 8px; margin-top: 12px; }
     .reason-pill {
       border-radius: 14px;
       white-space: normal;
@@ -737,9 +788,7 @@ def app_html(initial_section: str = "overview") -> str:
       background: rgba(217, 107, 43, 0.08);
       border-color: rgba(217, 107, 43, 0.18);
     }
-    .schedule-grid {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-    }
+    .schedule-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     .schedule-block {
       margin-top: 10px;
       padding: 12px;
@@ -747,34 +796,17 @@ def app_html(initial_section: str = "overview") -> str:
       background: rgba(14, 118, 110, 0.08);
       border: 1px solid rgba(14, 118, 110, 0.14);
     }
-    .schedule-block strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-    .calendar-wrap {
-      display: grid;
-      gap: 14px;
-    }
+    .schedule-block strong { display: block; margin-bottom: 4px; }
+    .calendar-wrap { display: grid; gap: 14px; }
     .month {
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 14px;
       background: rgba(255, 255, 255, 0.7);
     }
-    .month h3 {
-      margin: 0 0 12px;
-      font-size: 1rem;
-    }
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 8px;
-    }
-    .weekday {
-      text-align: center;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
+    .month h3 { margin: 0 0 12px; font-size: 1rem; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+    .weekday { text-align: center; font-size: 0.82rem; color: var(--muted); }
     .day-btn, .slot {
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -811,7 +843,21 @@ def app_html(initial_section: str = "overview") -> str:
     }
     .flash.show { display: block; }
     .flash.success { background: rgba(14, 118, 110, 0.12); color: #0f5d58; }
-    .flash.error { background: rgba(200, 56, 56, 0.12); color: #9c2d2d; }
+    .flash.error { background: var(--danger-soft); color: var(--danger); }
+    .footer {
+      margin-top: 26px;
+      padding: 20px 22px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .footer-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -837,10 +883,7 @@ def app_html(initial_section: str = "overview") -> str:
       justify-content: space-between;
       align-items: center;
     }
-    .modal-body {
-      padding: 0 20px 20px;
-      line-height: 1.7;
-    }
+    .modal-body { padding: 0 20px 20px; line-height: 1.7; }
     .icon-btn {
       background: transparent;
       border: 0;
@@ -850,27 +893,19 @@ def app_html(initial_section: str = "overview") -> str:
       font-size: 1.3rem;
     }
     @media (max-width: 1120px) {
-      .hero, .two-col, .results-grid, .booking-grid, .catalog-grid, .schedule-grid, .toolbar, .checkbox-grid, .weekday-grid {
+      .hero, .two-col, .results-grid, .booking-grid, .catalog-grid, .schedule-grid, .toolbar, .checkbox-grid, .weekday-grid, .contact-grid {
         grid-template-columns: 1fr;
       }
       .nav { position: static; }
+      .prompt-actions, .footer { flex-direction: column; align-items: stretch; }
+      .footer-links { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <div class="topbar">
-      <div class="topbar-links">
-        <span class="badge" data-i18n="platform_badge"></span>
-        <a class="ghost-link" href="/teacher/connect" data-i18n="teacher_connect"></a>
-      </div>
-      <div class="topbar-controls">
-        <label for="languageSelect" data-i18n="language"></label>
-        <select id="languageSelect" style="width:auto; min-width: 150px;">
-          <option value="en">English</option>
-          <option value="zh">简体中文</option>
-        </select>
-      </div>
+      <span class="badge" data-i18n="platform_badge"></span>
     </div>
 
     <section class="hero" id="overview">
@@ -879,22 +914,32 @@ def app_html(initial_section: str = "overview") -> str:
         <p data-i18n="subtitle"></p>
         <div class="hero-actions">
           <a class="primary-link" href="#advisor" data-i18n="hero_cta_advisor"></a>
-          <a class="ghost-link" href="#booking" data-i18n="hero_cta_booking"></a>
+          <a class="ghost" href="#booking" data-i18n="hero_cta_booking"></a>
         </div>
       </div>
       <div class="hero-side">
-        <div class="hero-stat"><strong>12</strong><span data-i18n="hero_stat_courses"></span></div>
-        <div class="hero-stat"><strong>1</strong><span data-i18n="hero_stat_schedule"></span></div>
-        <div class="hero-stat"><strong>Live</strong><span data-i18n="hero_stat_booking"></span></div>
+        <div class="hero-stat"><strong data-i18n="hero_stat_courses_value"></strong><span data-i18n="hero_stat_courses"></span></div>
+        <div class="hero-stat"><strong data-i18n="hero_stat_schedule_value"></strong><span data-i18n="hero_stat_schedule"></span></div>
+        <div class="hero-stat"><strong data-i18n="hero_stat_booking_value"></strong><span data-i18n="hero_stat_booking"></span></div>
       </div>
     </section>
 
     <nav class="nav">
-      <a href="#overview" data-i18n="nav_overview"></a>
-      <a href="#advisor" data-i18n="nav_advisor"></a>
-      <a href="#results" data-i18n="nav_results"></a>
-      <a href="#catalog" data-i18n="nav_catalog"></a>
-      <a href="#booking" data-i18n="nav_booking"></a>
+      <div class="nav-links">
+        <a href="#overview" data-i18n="nav_overview"></a>
+        <a href="#advisor" data-i18n="nav_advisor"></a>
+        <a href="#results" data-i18n="nav_results"></a>
+        <a href="#catalog" data-i18n="nav_catalog"></a>
+        <a href="#booking" data-i18n="nav_booking"></a>
+        <a href="#real-agent" data-i18n="nav_real_agent"></a>
+      </div>
+      <div class="nav-tools">
+        <label for="languageSelect" data-i18n="language"></label>
+        <select id="languageSelect">
+          <option value="en">English</option>
+          <option value="zh">简体中文</option>
+        </select>
+      </div>
     </nav>
 
     <section class="section" id="advisor">
@@ -906,20 +951,26 @@ def app_html(initial_section: str = "overview") -> str:
       </div>
       <div class="two-col">
         <section class="panel">
-          <h3 data-i18n="advisor_heading"></h3>
+          <div class="section-head" style="margin-bottom: 12px;">
+            <h3 data-i18n="advisor_heading"></h3>
+            <button type="button" id="resetAdvisorBtn" class="secondary" data-i18n="advisor_reset"></button>
+          </div>
           <div id="chatLog" class="chat-log"></div>
           <div style="margin-top: 16px;">
             <label for="advisorInput" data-i18n="advisor_input_label"></label>
             <textarea id="advisorInput" data-i18n-placeholder="advisor_placeholder"></textarea>
-          </div>
-          <div class="button-row">
-            <button type="button" id="sendAdvisorBtn" class="primary" data-i18n="advisor_send"></button>
-            <button type="button" id="resetAdvisorBtn" class="secondary" data-i18n="advisor_reset"></button>
+            <div class="prompt-actions">
+              <div></div>
+              <button type="button" id="sendAdvisorBtn" class="primary" data-i18n="advisor_send"></button>
+            </div>
           </div>
         </section>
 
         <section class="panel">
           <h3 data-i18n="profile_heading"></h3>
+          <p class="lead" data-i18n="advisor_form_note"></p>
+          <div id="advisorStatusNote" class="subtle-note"></div>
+          <div id="advisorFlash" class="flash"></div>
           <div class="input-row">
             <div>
               <label for="careerGoal" data-i18n="career_goal"></label>
@@ -928,6 +979,7 @@ def app_html(initial_section: str = "overview") -> str:
             <div>
               <label for="desiredLoad" data-i18n="desired_load"></label>
               <select id="desiredLoad">
+                <option value="" data-i18n="choose_load"></option>
                 <option value="light" data-i18n="load_light"></option>
                 <option value="balanced" data-i18n="load_balanced"></option>
                 <option value="challenging" data-i18n="load_challenging"></option>
@@ -935,7 +987,7 @@ def app_html(initial_section: str = "overview") -> str:
             </div>
             <div>
               <label for="maxCredits" data-i18n="max_credits"></label>
-              <input id="maxCredits" type="number" min="6" max="18" step="1" value="12" />
+              <input id="maxCredits" type="number" min="6" max="18" step="1" />
             </div>
             <div>
               <label data-i18n="focus_areas"></label>
@@ -1065,6 +1117,54 @@ def app_html(initial_section: str = "overview") -> str:
       </div>
     </section>
 
+    <section class="section" id="real-agent">
+      <div class="section-head">
+        <div>
+          <h2 data-i18n="real_agent_heading"></h2>
+          <p data-i18n="real_agent_subtitle"></p>
+        </div>
+      </div>
+      <section class="panel">
+        <p class="lead" data-i18n="real_agent_contact_hint"></p>
+        <form id="realAgentForm">
+          <div class="contact-grid">
+            <div>
+              <label for="agentName" data-i18n="name"></label>
+              <input id="agentName" required />
+            </div>
+            <div>
+              <label for="agentPhone" data-i18n="phone"></label>
+              <input id="agentPhone" />
+            </div>
+          </div>
+          <div class="contact-grid" style="margin-top: 12px;">
+            <div>
+              <label for="agentEmail" data-i18n="email"></label>
+              <input id="agentEmail" type="email" />
+            </div>
+            <div></div>
+          </div>
+          <div style="margin-top: 12px;">
+            <label for="agentMessage" data-i18n="comments"></label>
+            <textarea id="agentMessage" required></textarea>
+          </div>
+          <div class="prompt-actions">
+            <div></div>
+            <button type="submit" id="realAgentBtn" class="primary" data-i18n="real_agent_button"></button>
+          </div>
+        </form>
+        <div id="agentFlash" class="flash"></div>
+      </section>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-links">
+        <a href="mailto:contact@aicourseplatform.demo" data-i18n="contact_us"></a>
+        <a href="mailto:support@aicourseplatform.demo" data-i18n="technology_support"></a>
+      </div>
+      <div class="muted" data-i18n="footer_rights"></div>
+    </footer>
+
     <div id="successModal" class="modal-backdrop" aria-hidden="true">
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="successModalTitle">
         <div class="modal-header">
@@ -1100,9 +1200,9 @@ def app_html(initial_section: str = "overview") -> str:
       chatMessages: [],
       advisorProfile: {
         career_goal: "",
-        focus_areas: ["ai", "data"],
-        desired_load: "balanced",
-        max_credits: 12,
+        focus_areas: [],
+        desired_load: "",
+        max_credits: null,
         preferred_days: [],
         avoid_mornings: false,
       }
@@ -1117,6 +1217,9 @@ def app_html(initial_section: str = "overview") -> str:
     const desiredLoad = document.getElementById("desiredLoad");
     const maxCredits = document.getElementById("maxCredits");
     const avoidMornings = document.getElementById("avoidMornings");
+    const advisorStatusNote = document.getElementById("advisorStatusNote");
+    const advisorFlash = document.getElementById("advisorFlash");
+    const generatePlanBtn = document.getElementById("generatePlanBtn");
     const resultsEmpty = document.getElementById("resultsEmpty");
     const resultsContent = document.getElementById("resultsContent");
     const insightsList = document.getElementById("insightsList");
@@ -1132,6 +1235,8 @@ def app_html(initial_section: str = "overview") -> str:
     const selectedSummary = document.getElementById("selectedSummary");
     const flash = document.getElementById("flash");
     const bookingForm = document.getElementById("bookingForm");
+    const agentForm = document.getElementById("realAgentForm");
+    const agentFlash = document.getElementById("agentFlash");
     const successModal = document.getElementById("successModal");
     const successModalTitle = document.getElementById("successModalTitle");
     const successMessage = document.getElementById("successMessage");
@@ -1154,6 +1259,15 @@ def app_html(initial_section: str = "overview") -> str:
       return [...document.querySelectorAll(".focus-area")];
     }
 
+    function advisorConversationText() {
+      const messages = state.chatMessages.filter(message => message.role === "user").map(message => message.text.trim()).filter(Boolean);
+      const goal = careerGoal.value.trim();
+      if (goal) {
+        messages.push(goal);
+      }
+      return messages.join(" ");
+    }
+
     function addChatMessage(role, text) {
       state.chatMessages.push({ role, text });
       renderChat();
@@ -1162,6 +1276,49 @@ def app_html(initial_section: str = "overview") -> str:
     function resetChat() {
       state.chatMessages = [{ role: "assistant", text: t("chat_intro") }];
       renderChat();
+    }
+
+    function showAdvisorFlash(message, kind) {
+      advisorFlash.className = `flash show ${kind}`;
+      advisorFlash.textContent = message;
+    }
+
+    function showAgentFlash(message, kind) {
+      agentFlash.className = `flash show ${kind}`;
+      agentFlash.textContent = message;
+    }
+
+    function clearAdvisorFlash() {
+      advisorFlash.className = "flash";
+      advisorFlash.textContent = "";
+    }
+
+    function requiredProfileIssues() {
+      const issues = [];
+      if (!desiredLoad.value) {
+        issues.push(t("advisor_missing_load"));
+      }
+      if (!maxCredits.value || Number(maxCredits.value) <= 0) {
+        issues.push(t("advisor_missing_credits"));
+      }
+      if (!focusAreaInputs().some(input => input.checked)) {
+        issues.push(t("advisor_missing_focus"));
+      }
+      if (!preferredDayInputs().some(input => input.checked)) {
+        issues.push(t("advisor_missing_days"));
+      }
+      return issues;
+    }
+
+    function setAdvisorFormState() {
+      const issues = requiredProfileIssues();
+      if (issues.length) {
+        advisorStatusNote.textContent = `${t("advisor_form_required")} ${issues.join(", ")}`;
+        generatePlanBtn.disabled = true;
+      } else {
+        advisorStatusNote.textContent = t("generate_ready");
+        generatePlanBtn.disabled = false;
+      }
     }
 
     function applyTranslations() {
@@ -1184,6 +1341,7 @@ def app_html(initial_section: str = "overview") -> str:
       renderResults();
       renderCalendar();
       renderSlots();
+      setAdvisorFormState();
     }
 
     function populateTimezones() {
@@ -1204,9 +1362,7 @@ def app_html(initial_section: str = "overview") -> str:
     }
 
     function renderChat() {
-      chatLog.innerHTML = state.chatMessages.map(message => {
-        return `<div class="chat-msg ${message.role}">${message.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`;
-      }).join("");
+      chatLog.innerHTML = state.chatMessages.map(message => `<div class="chat-msg ${message.role}">${message.text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>`).join("");
       chatLog.scrollTop = chatLog.scrollHeight;
     }
 
@@ -1219,13 +1375,12 @@ def app_html(initial_section: str = "overview") -> str:
             <div class="meta-row">
               <span class="meta-pill">${course.course_id}</span>
               <span class="meta-pill">${course.area_label}</span>
+              <span class="meta-pill">${course.program_level_label}</span>
               <span class="meta-pill">${course.credits} cr</span>
             </div>
             <h4>${course.title}</h4>
             <p class="muted">${course.description}</p>
-            <div class="meeting-list">
-              <span class="meeting-pill">${t("meeting_times")}: ${meetings}</span>
-            </div>
+            <div class="meeting-list"><span class="meeting-pill">${t("meeting_times")}: ${meetings}</span></div>
             <div class="tag-row">${course.tags.slice(0, 4).map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
             <div class="reason-list"><span class="reason-pill">${t("outcomes")}: ${outcomes}</span></div>
           </article>
@@ -1250,6 +1405,7 @@ def app_html(initial_section: str = "overview") -> str:
             <div class="meta-row">
               <span class="meta-pill">${course.course_id}</span>
               <span class="meta-pill">${course.area_label}</span>
+              <span class="meta-pill">${course.program_level_label}</span>
               <span class="meta-pill">${course.credits} cr</span>
               ${course.recommended_for_schedule ? `<span class="status-pill">${t("recommended_badge")}</span>` : ""}
             </div>
@@ -1261,17 +1417,15 @@ def app_html(initial_section: str = "overview") -> str:
         `;
       }).join("");
       if (state.recommendation.conflicts.length) {
-        conflictsList.innerHTML = state.recommendation.conflicts.map(conflict => {
-          return `<div class="conflict-card"><strong>${conflict.course_a.title}</strong> + <strong>${conflict.course_b.title}</strong><br><span class="muted">${conflict.summary} ${conflict.time_range}</span></div>`;
-        }).join("");
+        conflictsList.innerHTML = state.recommendation.conflicts.map(conflict => `<div class="conflict-card"><strong>${conflict.course_a.title}</strong> + <strong>${conflict.course_b.title}</strong><br><span class="muted">${conflict.summary} ${conflict.time_range}</span></div>`).join("");
       } else {
         conflictsList.innerHTML = `<div class="conflict-card">${t("conflicts_none")}</div>`;
       }
       scheduleCredits.textContent = `${t("schedule_total_credits")}: ${state.recommendation.schedule.total_credits}`;
       scheduleGrid.innerHTML = state.recommendation.schedule.days.map(day => {
         const blocks = day.blocks.length
-          ? day.blocks.map(block => `<div class="schedule-block"><strong>${block.title}</strong>${block.start}-${block.end}<br><span class="muted">${block.area_label}</span></div>`).join("")
-          : `<div class="schedule-block" style="background: rgba(255,255,255,0.7); border-color: rgba(23,32,51,0.08);">${t("no_slots")}</div>`;
+          ? day.blocks.map(block => `<div class="schedule-block"><strong>${block.title}</strong>${block.start}-${block.end}<br><span class="muted">${block.area_label} · ${block.program_level_label}</span></div>`).join("")
+          : `<div class="schedule-block" style="background: rgba(255,255,255,0.7); border-color: rgba(23,32,51,0.08);">${t("no_class_blocks")}</div>`;
         return `<div class="schedule-day"><h4>${day.label}</h4>${blocks}</div>`;
       }).join("");
     }
@@ -1281,7 +1435,7 @@ def app_html(initial_section: str = "overview") -> str:
         career_goal: careerGoal.value.trim(),
         focus_areas: focusAreaInputs().filter(input => input.checked).map(input => input.value),
         desired_load: desiredLoad.value,
-        max_credits: Number(maxCredits.value) || 12,
+        max_credits: maxCredits.value ? Number(maxCredits.value) : null,
         preferred_days: preferredDayInputs().filter(input => input.checked).map(input => input.value),
         avoid_mornings: avoidMornings.checked,
       };
@@ -1290,8 +1444,8 @@ def app_html(initial_section: str = "overview") -> str:
     function syncProfile(profile) {
       state.advisorProfile = { ...state.advisorProfile, ...profile };
       careerGoal.value = state.advisorProfile.career_goal || "";
-      desiredLoad.value = state.advisorProfile.desired_load || "balanced";
-      maxCredits.value = String(state.advisorProfile.max_credits || 12);
+      desiredLoad.value = state.advisorProfile.desired_load || "";
+      maxCredits.value = state.advisorProfile.max_credits ? String(state.advisorProfile.max_credits) : "";
       avoidMornings.checked = Boolean(state.advisorProfile.avoid_mornings);
       focusAreaInputs().forEach(input => {
         input.checked = (state.advisorProfile.focus_areas || []).includes(input.value);
@@ -1299,6 +1453,7 @@ def app_html(initial_section: str = "overview") -> str:
       preferredDayInputs().forEach(input => {
         input.checked = (state.advisorProfile.preferred_days || []).includes(input.value);
       });
+      setAdvisorFormState();
     }
 
     async function fetchCourses() {
@@ -1308,26 +1463,30 @@ def app_html(initial_section: str = "overview") -> str:
     }
 
     async function generatePlan(message = "") {
+      clearAdvisorFlash();
+      const issues = requiredProfileIssues();
+      if (issues.length) {
+        showAdvisorFlash(`${t("advisor_form_required")} ${issues.join(", ")}`, "error");
+        return;
+      }
       const response = await fetch("/api/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          locale: state.locale,
-          message,
-          profile: collectProfile(),
-        }),
+        body: JSON.stringify({ locale: state.locale, message, profile: collectProfile() }),
       });
       const result = await response.json();
       if (!response.ok) {
-        showFlash(result.error || "Request failed.", "error");
+        showAdvisorFlash(result.error || "Request failed.", "error");
         return;
       }
       syncProfile(result.profile);
       state.recommendation = result;
       renderResults();
+      document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     async function sendAdvisorMessage() {
+      clearAdvisorFlash();
       const message = advisorInput.value.trim();
       if (!message) {
         return;
@@ -1337,22 +1496,20 @@ def app_html(initial_section: str = "overview") -> str:
       const response = await fetch("/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          locale: state.locale,
-          message,
-          profile: collectProfile(),
-        }),
+        body: JSON.stringify({ locale: state.locale, message, profile: collectProfile() }),
       });
       const result = await response.json();
       if (!response.ok) {
-        showFlash(result.error || "Request failed.", "error");
+        showAdvisorFlash(result.error || "Request failed.", "error");
         return;
       }
-      syncProfile(result.profile);
-      state.recommendation = result.recommendation;
-      addChatMessage("assistant", `${result.reply}\n\n${result.follow_up}`);
-      renderResults();
-      document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+      if (!careerGoal.value.trim() && result.profile?.career_goal) {
+        careerGoal.value = result.profile.career_goal;
+      }
+      addChatMessage("assistant", `${result.reply}
+
+${result.follow_up}`);
+      setAdvisorFormState();
     }
 
     function showFlash(message, kind) {
@@ -1467,25 +1624,46 @@ def app_html(initial_section: str = "overview") -> str:
       }
     }
 
+    async function submitRealAgentRequest(event) {
+      event.preventDefault();
+      const payload = {
+        student_name: document.getElementById("agentName").value,
+        student_email: document.getElementById("agentEmail").value,
+        student_phone: document.getElementById("agentPhone").value,
+        message: document.getElementById("agentMessage").value,
+        locale: state.locale,
+      };
+      const response = await fetch("/api/contact-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        showAgentFlash(result.error || "Request failed.", "error");
+        return;
+      }
+      agentForm.reset();
+      showAgentFlash(result.message, "success");
+    }
+
     document.getElementById("sendAdvisorBtn").addEventListener("click", sendAdvisorMessage);
     document.getElementById("resetAdvisorBtn").addEventListener("click", () => {
       state.recommendation = null;
-      syncProfile({
-        career_goal: "",
-        focus_areas: ["ai", "data"],
-        desired_load: "balanced",
-        max_credits: 12,
-        preferred_days: [],
-        avoid_mornings: false,
-      });
+      syncProfile({ career_goal: "", focus_areas: [], desired_load: "", max_credits: null, preferred_days: [], avoid_mornings: false });
+      clearAdvisorFlash();
       resetChat();
       renderResults();
     });
-    document.getElementById("generatePlanBtn").addEventListener("click", () => generatePlan(state.chatMessages.filter(message => message.role === "user").map(message => message.text).join(" ")));
+    generatePlanBtn.addEventListener("click", () => generatePlan(advisorConversationText()));
     advisorInput.addEventListener("keydown", event => {
       if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
         sendAdvisorMessage();
       }
+    });
+    [careerGoal, desiredLoad, maxCredits, avoidMornings, ...focusAreaInputs(), ...preferredDayInputs()].forEach(input => {
+      input.addEventListener("change", setAdvisorFormState);
+      input.addEventListener("input", setAdvisorFormState);
     });
     bookTeacherBtn.addEventListener("click", () => {
       if (!state.recommendation) {
@@ -1495,6 +1673,7 @@ def app_html(initial_section: str = "overview") -> str:
       showFlash(t("booking_prefill_applied"), "success");
       document.getElementById("booking").scrollIntoView({ behavior: "smooth", block: "start" });
     });
+    agentForm.addEventListener("submit", submitRealAgentRequest);
 
     bookingForm.addEventListener("submit", async event => {
       event.preventDefault();
@@ -1547,7 +1726,7 @@ def app_html(initial_section: str = "overview") -> str:
       applyTranslations();
       await fetchCourses();
       if (state.recommendation) {
-        await generatePlan(state.chatMessages.filter(message => message.role === "user").map(message => message.text).join(" "));
+        await generatePlan(advisorConversationText());
       }
     });
     timezoneSelect.addEventListener("change", async event => {
@@ -1931,6 +2110,17 @@ class BookingHandler(BaseHTTPRequestHandler):
                 self._send_json(recommend_courses(payload))
             except Exception as exc:  # noqa: BLE001
                 self._send_json({"error": f"Recommendation failed: {exc}"}, status=HTTPStatus.BAD_REQUEST)
+            return
+        if parsed.path == "/api/contact-request":
+            try:
+                payload = self._read_json()
+                record = create_contact_request(self.server.connection, payload)
+                locale = record.locale if record.locale in TRANSLATIONS else "en"
+                self._send_json({"message": TRANSLATIONS[locale]["real_agent_success"], "request_id": record.request_id})
+            except ValueError as exc:
+                self._send_json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
+            except Exception as exc:  # noqa: BLE001
+                self._send_json({"error": f"Contact request failed: {exc}"}, status=HTTPStatus.BAD_GATEWAY)
             return
         if parsed.path == "/api/cancel":
             booking = None

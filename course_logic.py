@@ -28,6 +28,10 @@ AREA_LABELS = {
         "research": "研究",
     },
 }
+PROGRAM_LEVEL_LABELS = {
+    "en": {"undergraduate": "Undergraduate", "graduate": "Graduate"},
+    "zh": {"undergraduate": "本科", "graduate": "研究生"},
+}
 LOAD_MAP = {"light": 9, "balanced": 12, "challenging": 15}
 
 
@@ -43,6 +47,7 @@ class Course:
     course_id: str
     area: str
     level: str
+    program_level: str
     credits: int
     title_en: str
     title_zh: str
@@ -59,6 +64,7 @@ CATALOG: tuple[Course, ...] = (
         course_id="AI201",
         area="ai",
         level="Intermediate",
+        program_level="undergraduate",
         credits=3,
         title_en="Machine Learning Foundations",
         title_zh="机器学习基础",
@@ -73,6 +79,7 @@ CATALOG: tuple[Course, ...] = (
         course_id="AI230",
         area="ai",
         level="Intermediate",
+        program_level="undergraduate",
         credits=3,
         title_en="Natural Language Processing Studio",
         title_zh="自然语言处理工作坊",
@@ -87,6 +94,7 @@ CATALOG: tuple[Course, ...] = (
         course_id="CS105",
         area="ai",
         level="Introductory",
+        program_level="undergraduate",
         credits=3,
         title_en="Python for Problem Solving",
         title_zh="问题求解 Python",
@@ -101,6 +109,7 @@ CATALOG: tuple[Course, ...] = (
         course_id="DS210",
         area="data",
         level="Intermediate",
+        program_level="undergraduate",
         credits=3,
         title_en="Statistics for Social Data",
         title_zh="社会数据统计",
@@ -115,12 +124,13 @@ CATALOG: tuple[Course, ...] = (
         course_id="DATA310",
         area="data",
         level="Advanced",
+        program_level="graduate",
         credits=3,
         title_en="Data Visualization for Decision Making",
         title_zh="决策数据可视化",
-        description_en="Visual storytelling, dashboards, and responsible presentation of uncertainty.",
-        description_zh="学习可视化叙事、仪表盘设计与不确定性的负责表达。",
-        tags=("data", "visualization", "storytelling", "product", "communication"),
+        description_en="Visual storytelling, dashboards, and responsible presentation of uncertainty for graduate-level project work.",
+        description_zh="面向研究生项目实践，学习可视化叙事、仪表盘设计与不确定性的负责表达。",
+        tags=("data", "visualization", "storytelling", "product", "communication", "graduate"),
         meetings=(MeetingBlock("Fri", "13:00", "16:00"),),
         outcomes_en=("Design clear charts", "Explain decisions with visuals", "Critique misleading graphics"),
         outcomes_zh=("设计清晰图表", "用可视化解释决策", "识别误导性图形"),
@@ -129,6 +139,7 @@ CATALOG: tuple[Course, ...] = (
         course_id="HCI250",
         area="product",
         level="Intermediate",
+        program_level="undergraduate",
         credits=3,
         title_en="Human-Computer Interaction",
         title_zh="人机交互",
@@ -143,6 +154,7 @@ CATALOG: tuple[Course, ...] = (
         course_id="PHIL240",
         area="humanities",
         level="Intermediate",
+        program_level="undergraduate",
         credits=3,
         title_en="Logic and Argumentation",
         title_zh="逻辑与论证",
@@ -157,6 +169,7 @@ CATALOG: tuple[Course, ...] = (
         course_id="HUM205",
         area="humanities",
         level="Introductory",
+        program_level="undergraduate",
         credits=2,
         title_en="Technology, Ethics, and Society",
         title_zh="技术、伦理与社会",
@@ -171,6 +184,7 @@ CATALOG: tuple[Course, ...] = (
         course_id="EDU215",
         area="education",
         level="Intermediate",
+        program_level="undergraduate",
         credits=3,
         title_en="Learning Sciences and Course Design",
         title_zh="学习科学与课程设计",
@@ -182,29 +196,31 @@ CATALOG: tuple[Course, ...] = (
         outcomes_zh=("设计课程单元", "评估学习干预", "把教学法与产品思维结合"),
     ),
     Course(
-        course_id="BUS260",
+        course_id="BUS520",
         area="product",
-        level="Intermediate",
+        level="Advanced",
+        program_level="graduate",
         credits=3,
         title_en="Product Strategy for EdTech",
         title_zh="教育科技产品战略",
-        description_en="Market discovery, product bets, and roadmap thinking for education-focused platforms.",
-        description_zh="聚焦教育科技平台的市场发现、产品判断与路线图设计。",
-        tags=("product", "strategy", "edtech", "startup", "business"),
+        description_en="Market discovery, product bets, and roadmap thinking for education-focused platforms at graduate seminar depth.",
+        description_zh="以研究生研讨课深度讨论教育科技平台的市场发现、产品判断与路线图设计。",
+        tags=("product", "strategy", "edtech", "startup", "business", "graduate"),
         meetings=(MeetingBlock("Mon", "18:30", "20:00"), MeetingBlock("Wed", "18:30", "20:00")),
         outcomes_en=("Evaluate product-market fit", "Prioritize feature bets", "Communicate a roadmap"),
         outcomes_zh=("评估产品市场匹配", "排序功能优先级", "表达产品路线图"),
     ),
     Course(
-        course_id="RES300",
+        course_id="RES610",
         area="research",
         level="Advanced",
+        program_level="graduate",
         credits=2,
-        title_en="Undergraduate Research Seminar",
-        title_zh="本科研究研讨课",
-        description_en="Paper discussions, proposal writing, and faculty-style feedback on research plans.",
-        description_zh="通过论文讨论、proposal 写作与教师式反馈推进研究计划。",
-        tags=("research", "writing", "grad school", "papers", "presentation"),
+        title_en="Graduate Research Seminar",
+        title_zh="研究生研究研讨课",
+        description_en="Paper discussions, proposal writing, and faculty-style feedback on graduate-level research plans.",
+        description_zh="通过论文讨论、proposal 写作与导师式反馈推进研究生层级的研究计划。",
+        tags=("research", "writing", "grad school", "papers", "presentation", "graduate"),
         meetings=(MeetingBlock("Fri", "16:00", "18:00"),),
         outcomes_en=("Draft a proposal", "Lead a paper discussion", "Prepare for faculty mentoring"),
         outcomes_zh=("撰写研究计划", "主持论文讨论", "为导师交流做准备"),
@@ -213,6 +229,7 @@ CATALOG: tuple[Course, ...] = (
         course_id="DATA225",
         area="data",
         level="Intermediate",
+        program_level="undergraduate",
         credits=3,
         title_en="Applied Data Analytics",
         title_zh="应用数据分析",
@@ -227,24 +244,12 @@ CATALOG: tuple[Course, ...] = (
 
 
 KEYWORD_MAP = {
-    "ai": {
-        "keywords": ("ai", "machine learning", "ml", "nlp", "chatbot", "人工智能", "机器学习", "自然语言处理"),
-    },
-    "data": {
-        "keywords": ("data", "analytics", "statistics", "visualization", "dashboard", "数据", "统计", "可视化", "分析"),
-    },
-    "humanities": {
-        "keywords": ("philosophy", "ethics", "writing", "logic", "humanities", "哲学", "伦理", "写作", "逻辑", "人文"),
-    },
-    "product": {
-        "keywords": ("product", "ux", "design", "startup", "strategy", "产品", "设计", "交互", "创业"),
-    },
-    "education": {
-        "keywords": ("education", "teaching", "learning", "curriculum", "edtech", "教育", "教学", "学习", "课程"),
-    },
-    "research": {
-        "keywords": ("research", "paper", "proposal", "grad school", "研究", "论文", "申请", "科研"),
-    },
+    "ai": {"keywords": ("ai", "machine learning", "ml", "nlp", "chatbot", "人工智能", "机器学习", "自然语言处理")},
+    "data": {"keywords": ("data", "analytics", "statistics", "visualization", "dashboard", "数据", "统计", "可视化", "分析")},
+    "humanities": {"keywords": ("philosophy", "ethics", "writing", "logic", "humanities", "哲学", "伦理", "写作", "逻辑", "人文")},
+    "product": {"keywords": ("product", "ux", "design", "startup", "strategy", "产品", "设计", "交互", "创业")},
+    "education": {"keywords": ("education", "teaching", "learning", "curriculum", "edtech", "教育", "教学", "学习", "课程")},
+    "research": {"keywords": ("research", "paper", "proposal", "grad school", "研究", "论文", "申请", "科研")},
 }
 
 
@@ -276,6 +281,8 @@ def serialize_course(course: Course, locale: str = "en") -> dict[str, Any]:
         "area": course.area,
         "area_label": AREA_LABELS[locale].get(course.area, course.area),
         "level": course.level,
+        "program_level": course.program_level,
+        "program_level_label": PROGRAM_LEVEL_LABELS[locale][course.program_level],
         "credits": course.credits,
         "description": _localized(locale, course.description_en, course.description_zh),
         "tags": list(course.tags),
@@ -351,6 +358,13 @@ def infer_profile(payload: dict[str, Any]) -> dict[str, Any]:
         if any(token in message_lower for token in ("9 credits", "9 学分", "10 credits")):
             max_credits = 9
 
+    preferred_program_level = str(current_profile.get("preferred_program_level", "")).strip().lower()
+    if preferred_program_level not in {"undergraduate", "graduate"}:
+        if any(token in message_lower for token in ("graduate", "master", "phd", "研究生", "硕士", "博士")):
+            preferred_program_level = "graduate"
+        else:
+            preferred_program_level = "undergraduate"
+
     career_goal = str(current_profile.get("career_goal") or "").strip()
     if not career_goal:
         if any(token in message_lower for token in ("research", "phd", "graduate school", "科研", "研究", "申请博士", "读研")):
@@ -374,6 +388,7 @@ def infer_profile(payload: dict[str, Any]) -> dict[str, Any]:
         "max_credits": max_credits,
         "preferred_days": preferred_days,
         "avoid_mornings": avoid_mornings,
+        "preferred_program_level": preferred_program_level,
     }
 
 
@@ -385,6 +400,7 @@ def _score_course(course: Course, profile: dict[str, Any]) -> tuple[int, list[st
     preferred_days = set(profile.get("preferred_days", []))
     avoid_mornings = bool(profile.get("avoid_mornings"))
     desired_load = profile.get("desired_load", "balanced")
+    preferred_program_level = profile.get("preferred_program_level", "undergraduate")
 
     score = 0
     reasons: list[str] = []
@@ -392,6 +408,10 @@ def _score_course(course: Course, profile: dict[str, Any]) -> tuple[int, list[st
     if course.area in focus_areas:
         score += 5
         reasons.append(_localized(locale, f"Directly supports your {AREA_LABELS['en'][course.area]} focus.", f"直接支持你的{AREA_LABELS['zh'][course.area]}方向。"))
+
+    if course.program_level == preferred_program_level:
+        score += 2
+        reasons.append(_localized(locale, f"Matches your preferred {PROGRAM_LEVEL_LABELS['en'][course.program_level].lower()} level.", f"符合你偏好的{PROGRAM_LEVEL_LABELS['zh'][course.program_level]}课程层级。"))
 
     keyword_hits = [tag for tag in course.tags if tag.lower() in career_goal or tag.lower() in message]
     if keyword_hits:
@@ -437,14 +457,8 @@ def _find_conflicts(courses: list[Course], locale: str) -> list[dict[str, Any]]:
                         continue
                     conflicts.append(
                         {
-                            "course_a": {
-                                "course_id": left_course.course_id,
-                                "title": _course_title(left_course, locale),
-                            },
-                            "course_b": {
-                                "course_id": right_course.course_id,
-                                "title": _course_title(right_course, locale),
-                            },
+                            "course_a": {"course_id": left_course.course_id, "title": _course_title(left_course, locale)},
+                            "course_b": {"course_id": right_course.course_id, "title": _course_title(right_course, locale)},
                             "day": left_block.day,
                             "day_label": DAY_LABELS[locale][left_block.day],
                             "time_range": f"{left_block.start}-{left_block.end} vs {right_block.start}-{right_block.end}",
@@ -467,6 +481,7 @@ def _build_schedule(courses: list[Course], locale: str) -> dict[str, Any]:
                     "course_id": course.course_id,
                     "title": _course_title(course, locale),
                     "area_label": AREA_LABELS[locale].get(course.area, course.area),
+                    "program_level_label": PROGRAM_LEVEL_LABELS[locale][course.program_level],
                     "start": block.start,
                     "end": block.end,
                 }
@@ -475,14 +490,7 @@ def _build_schedule(courses: list[Course], locale: str) -> dict[str, Any]:
         by_day[day].sort(key=lambda block: _clock_to_minutes(block["start"]))
 
     return {
-        "days": [
-            {
-                "day": day,
-                "label": DAY_LABELS[locale][day],
-                "blocks": by_day[day],
-            }
-            for day in WEEKDAYS
-        ],
+        "days": [{"day": day, "label": DAY_LABELS[locale][day], "blocks": by_day[day]} for day in WEEKDAYS],
         "total_credits": sum(course.credits for course in courses),
     }
 
@@ -497,12 +505,7 @@ def recommend_courses(payload: dict[str, Any]) -> dict[str, Any]:
         scored_courses.append((score, course, reasons))
 
     scored_courses.sort(
-        key=lambda item: (
-            -item[0],
-            WEEKDAY_ORDER[item[1].meetings[0].day],
-            _clock_to_minutes(item[1].meetings[0].start),
-            item[1].course_id,
-        )
+        key=lambda item: (-item[0], WEEKDAY_ORDER[item[1].meetings[0].day], _clock_to_minutes(item[1].meetings[0].start), item[1].course_id)
     )
 
     recommended = scored_courses[:6]
@@ -530,22 +533,15 @@ def recommend_courses(payload: dict[str, Any]) -> dict[str, Any]:
     selected_courses = [course for _, course, _ in selected]
     recommendation_cards = []
     for score, course, reasons in recommended:
-        recommendation_cards.append(
-            {
-                **serialize_course(course, locale),
-                "score": score,
-                "match_reasons": reasons[:3],
-                "recommended_for_schedule": course in selected_courses,
-            }
-        )
+        recommendation_cards.append({**serialize_course(course, locale), "score": score, "match_reasons": reasons[:3], "recommended_for_schedule": course in selected_courses})
 
-    schedule_cards = [serialize_course(course, locale) for course in selected_courses]
     focus_labels = [AREA_LABELS[locale].get(area, area) for area in profile["focus_areas"]]
+    program_level_label = PROGRAM_LEVEL_LABELS[locale][profile["preferred_program_level"]]
     insights = [
         _localized(
             locale,
-            f"This plan centers on {', '.join(focus_labels[:2])} while keeping the load around {profile['max_credits']} credits.",
-            f"这份方案以 {', '.join(focus_labels[:2])} 为核心，同时把学分控制在 {profile['max_credits']} 左右。",
+            f"This plan centers on {', '.join(focus_labels[:2])} at the {program_level_label.lower()} level while keeping the load around {profile['max_credits']} credits.",
+            f"这份方案以 {', '.join(focus_labels[:2])} 为核心，课程层级偏向{program_level_label}，同时把学分控制在 {profile['max_credits']} 左右。",
         ),
         _localized(
             locale,
@@ -556,15 +552,15 @@ def recommend_courses(payload: dict[str, Any]) -> dict[str, Any]:
 
     booking_prefill = _localized(
         locale,
-        f"I would like to discuss this draft semester plan: {', '.join(course.title_en for course in selected_courses)}. Career goal: {profile['career_goal']}.",
-        f"我想讨论这份学期课程草案：{', '.join(course.title_zh for course in selected_courses)}。当前目标：{profile['career_goal']}。",
+        f"I would like to discuss this draft semester plan: {', '.join(course.title_en for course in selected_courses)}. Career goal: {profile['career_goal']}. Preferred level: {PROGRAM_LEVEL_LABELS['en'][profile['preferred_program_level']]}",
+        f"我想讨论这份学期课程草案：{', '.join(course.title_zh for course in selected_courses)}。当前目标：{profile['career_goal']}。偏好层级：{PROGRAM_LEVEL_LABELS['zh'][profile['preferred_program_level']]}",
     )
 
     return {
         "profile": profile,
         "insights": insights,
         "recommended_courses": recommendation_cards,
-        "selected_schedule_courses": schedule_cards,
+        "selected_schedule_courses": [serialize_course(course, locale) for course in selected_courses],
         "conflicts": _find_conflicts(top_courses, locale),
         "schedule": _build_schedule(selected_courses, locale),
         "booking_prefill": booking_prefill,
@@ -580,8 +576,8 @@ def chatbot_response(payload: dict[str, Any]) -> dict[str, Any]:
     if profile["message"]:
         reply = _localized(
             locale,
-            f"I read your note as a plan focused on {', '.join(AREA_LABELS['en'].get(area, area) for area in profile['focus_areas'][:2])}. A strong first shortlist is {', '.join(top_titles)}. I also drafted a conflict-aware schedule you can review below.",
-            f"我把你的需求理解为一个以 {', '.join(AREA_LABELS['zh'].get(area, area) for area in profile['focus_areas'][:2])} 为核心的学期方案。第一轮优先课可以先看 {', '.join(top_titles)}。我也已经生成了一份带冲突检查的周课表草案，你可以直接在下方查看。",
+            f"I read your note as a plan focused on {', '.join(AREA_LABELS['en'].get(area, area) for area in profile['focus_areas'][:2])}. A strong first shortlist is {', '.join(top_titles)}.",
+            f"我把你的需求理解为一个以 {', '.join(AREA_LABELS['zh'].get(area, area) for area in profile['focus_areas'][:2])} 为核心的学期方案。第一轮优先课可以先看 {', '.join(top_titles)}。",
         )
     else:
         reply = _localized(
@@ -592,8 +588,8 @@ def chatbot_response(payload: dict[str, Any]) -> dict[str, Any]:
 
     follow_up = _localized(
         locale,
-        "If you want a tighter recommendation, mention goals like research, product, grad school, avoiding morning classes, or a target credit load.",
-        "如果你想要更精准的推荐，可以继续补充科研、产品、申研、避免早课、目标学分等信息。",
+        f"When you are ready, fill in semester load, target credits, focus areas, and preferred class days to unlock full recommendation results. I also tagged the plan toward {PROGRAM_LEVEL_LABELS['en'][profile['preferred_program_level']].lower()} courses.",
+        f"准备好之后，请先填写学期负担、目标学分、重点方向和偏好上课日，再解锁完整推荐结果。我也已经把方案偏向 {PROGRAM_LEVEL_LABELS['zh'][profile['preferred_program_level']]} 课程。",
     )
 
     return {

@@ -125,6 +125,28 @@ def build_calendar_months(start_day: date, total_days: int) -> list[dict[str, An
 
 
 @dataclass
+class ContactRequestRecord:
+    request_id: str
+    student_name: str
+    student_email: str
+    student_phone: str
+    message: str
+    locale: str
+    created_at_utc: datetime
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "request_id": self.request_id,
+            "student_name": self.student_name,
+            "student_email": self.student_email,
+            "student_phone": self.student_phone,
+            "message": self.message,
+            "locale": self.locale,
+            "created_at_utc": datetime_to_iso(self.created_at_utc),
+        }
+
+
+@dataclass
 class BookingRecord:
     booking_id: str
     student_name: str
@@ -209,6 +231,19 @@ def init_db(db_path: str | Path) -> None:
                 student_email TEXT NOT NULL,
                 canceled_at_utc TEXT NOT NULL,
                 beijing_cancel_day TEXT NOT NULL
+            )
+            """
+        )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS contact_requests (
+                request_id TEXT PRIMARY KEY,
+                student_name TEXT NOT NULL,
+                student_email TEXT NOT NULL,
+                student_phone TEXT NOT NULL,
+                message TEXT NOT NULL,
+                locale TEXT NOT NULL,
+                created_at_utc TEXT NOT NULL
             )
             """
         )
@@ -658,6 +693,64 @@ def save_google_account(connection: sqlite3.Connection, account: dict[str, Any])
             ),
         )
         connection.commit()
+
+
+def create_contact_request(
+    connection: sqlite3.Connection,
+    payload: dict[str, Any],
+) -> ContactRequestRecord:
+    student_name = str(payload.get("student_name", "")).strip()
+    student_email = str(payload.get("student_email", "")).strip().lower()
+    student_phone = str(payload.get("student_phone", "")).strip()
+    message = str(payload.get("message", "")).strip()
+    locale = str(payload.get("locale", "en")).strip() or "en"
+
+    if not student_name:
+        raise ValueError("Name is required.")
+    if not message:
+        raise ValueError("A short message is required.")
+    if not student_email and not student_phone:
+        raise ValueError("Please provide an email address or phone number.")
+    if student_email and "@" not in student_email:
+        raise ValueError("A valid email is required.")
+
+    record = ContactRequestRecord(
+        request_id=str(uuid.uuid4()),
+        student_name=student_name,
+        student_email=student_email,
+        student_phone=student_phone,
+        message=message,
+        locale=locale,
+        created_at_utc=now_utc(),
+    )
+
+    with DB_LOCK:
+        connection.execute(
+            """
+            INSERT INTO contact_requests (
+                request_id,
+                student_name,
+                student_email,
+                student_phone,
+                message,
+                locale,
+                created_at_utc
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                record.request_id,
+                record.student_name,
+                record.student_email,
+                record.student_phone,
+                record.message,
+                record.locale,
+                datetime_to_iso(record.created_at_utc),
+            ),
+        )
+        connection.commit()
+
+    return record
 
 
 def json_dump(data: Any) -> bytes:
