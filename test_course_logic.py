@@ -30,7 +30,19 @@ class CourseLogicTests(unittest.TestCase):
         self.assertLessEqual(result["schedule"]["total_credits"], 12)
         selected_ids = {course["course_id"] for course in result["selected_schedule_courses"]}
         self.assertIn("AI201", {course["course_id"] for course in result["recommended_courses"]})
-        self.assertNotEqual({"AI201", "DATA225"}.issubset(selected_ids), True)
+        self.assertFalse({"AI201", "DATA225"}.issubset(selected_ids))
+
+    def test_recommendations_include_program_levels(self) -> None:
+        result = recommend_courses(
+            {
+                "locale": "en",
+                "message": "I want graduate research and product courses.",
+                "profile": {"desired_load": "balanced", "max_credits": 12, "focus_areas": ["research", "product"]},
+            }
+        )
+        levels = {course["program_level"] for course in result["recommended_courses"]}
+        self.assertIn("graduate", levels)
+        self.assertTrue(all(course["program_level_label"] for course in result["recommended_courses"]))
 
     def test_chatbot_response_contains_preview_and_recommendation(self) -> None:
         result = chatbot_response(

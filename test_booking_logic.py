@@ -9,6 +9,7 @@ from booking_logic import (
     BEIJING_TZ,
     CANCELLATION_LIMIT_PER_DAY,
     build_booking_summary,
+    create_contact_request,
     cancellation_count_today,
     create_provisional_booking,
     finalize_booking,
@@ -109,6 +110,31 @@ class BookingLogicTests(unittest.TestCase):
         summary = build_booking_summary(stored)
         self.assertIn("Asia/Shanghai", summary["beijing_label"])
         self.assertIn("Europe/London", summary["local_label"])
+
+    def test_contact_request_requires_email_or_phone(self) -> None:
+        with self.assertRaises(ValueError):
+            create_contact_request(
+                self.connection,
+                {
+                    "student_name": "Needs Help",
+                    "student_email": "",
+                    "student_phone": "",
+                    "message": "Please contact me.",
+                    "locale": "en",
+                },
+            )
+
+        record = create_contact_request(
+            self.connection,
+            {
+                "student_name": "Needs Help",
+                "student_email": "student@example.com",
+                "student_phone": "",
+                "message": "Please contact me.",
+                "locale": "en",
+            },
+        )
+        self.assertEqual(record.student_email, "student@example.com")
 
 
 if __name__ == "__main__":
